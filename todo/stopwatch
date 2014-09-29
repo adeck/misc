@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+i=0
+echo
+while true
+do
+   echo -ne "\e[A\e2K\r"
+   echo "$((i++)) -- $(date)"
+   sleep 1
+done
+

@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+
+# Picks a task at random from a list of tasks
+#  Usage:
+#     choose_task <TODO_LIST_FILE>
+choose_task()
+{
+   # Removes:
+   #  -  comment lines, then
+   #  -  lines which begin with spaces, then
+   #  -  empty lines
+   local options="$(cat "$1" | sed 's/#.*//g' \
+                                 | sed 's/^\s.*//g' \
+                                 | sed '/^$/d')"
+   local len="$(echo "$options" | wc -l)"
+   # Picks one of the tasks at random from the list
+   echo -e "$(echo "$options" | head -n $(( (RANDOM % len) + 1)) | tail -n 1)"
+}
+
+# Counts down from a given number of minutes (under an hour)
+#  Usage:
+#     countdown <NUM_MINUTES>
+countdown()
+{
+   local minutes=$1; shift
+   echo
+   for ((i = 60 * minutes; i != 0; --i))
+   do
+      local second=$((i % 60))
+      local minute=$(( ((i - second) / 60) % 60))
+      # ANSI VT100 escape sequences. 'A' takes an optional numeric argument
+      #  but defaults to 1; moves up a line. '2K' erases the current line.
+      # And of course \r returns the carriage.
+      echo -e "\e[A\e[2K\rTime remaining: $minute:$second"
+      sleep 1
+   done
+}
+
+# Plays part of a song/film using the totem video player; there must be an open
+#  X session for this to work. It also moves the playing window behind all the
+#  other open windows, so that you can continue working at the command line
+#  mostly uninterrupted (the playing window still gets focus, unfortunately)
+#  Usage:
+#     play <PATH_TO_FILE> <DURATION_IN_SECONDS>
+play()
+{
+   local song=$1; shift
+   local duration=$1; shift
+   # Why all this forking? Well, otherwise interactive invocations get
+   #  notified when background processes are spawned and terminated.
+   # Understandably, this gets old fast. But isn't a problem when the
+   #  the background processes are spawned in a foregrounded subshell.
+   (  totem "$song" 2>/dev/null >/dev/null &
+      local music=$!
+      (sleep $duration ; kill $music ) & )
+   sleep 1
+   wmctrl -r "$(basename "$song")" -b toggle,below
+}
+
