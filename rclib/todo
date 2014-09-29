@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+#
+# functions used to support todo list functionality
+#
+
+range()
+{
+   local num=$1 ; shift
+   local low=$1 ; shift
+   local high=$1 ; shift
+   [ $num -ge $low ] && [ $num -le $high ]
+   return $?
+}
+
+todayis()
+{
+   local day=`date +%u`
+   local true=0
+   local false=1
+   local i
+   for i in $@
+   do
+      [ $i -eq $day ] && return $true
+   done
+   return $false
+}
+
+haveclass()
+{
+   local class="$1" ; shift
+   todayis "$@" && {
+      [ -z $ci ] && ci=0
+      echo -n "$reset${colors[((ci = (ci + 1) % colors_len ))]}"
+      echo "$class"
+   }
+   return $?
+}
+
+rangewarn()
+{
+   local day=`date +%u`
+   local low=$1 ; shift
+   local high=$1 ; shift
+   local warnstr=$1 ; shift
+   range $day $low $high && {
+      [ -z $ci ] && ci=0
+      echo -n "$reset${colors[((ci = (ci + 1) % colors_len ))]}"
+      echo "$warnstr"
+   }
+   return $?
+}
+

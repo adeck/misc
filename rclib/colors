@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+#
+#  Hello, future self.
+#  You're probably looking at this file because you want to add a color, or
+#     set of colors. And that means you're going to see the hardcoded constant
+#     '7' in this code. Because bash array indexing is, for want of a better
+#     word, stupid. You'll want to be fixing that part of this code.
+#  In the meanwhile- since I've got you- how are things?
+#
+
+# colors
+black="[0m[01;30m"
+red="[0m[01;31m"
+green="[0m[01;32m"
+yellow="[0m[01;33m"
+blue="[0m[01;34m"
+magenta="[0m[01;35m"
+cyan="[0m[01;36m"
+white="[0m[01;39m"
+reset="[0m"
+
+# Black isn't included because it doesn't show up well, but still left defined
+colors=( $red $green $yellow $blue $magenta $cyan $white )
+colors_len=7   # ${#colors} <-- this yields 12; which, IIRC, is b/c there are
+               # no start index guarantees
+
+show_colors()
+{
+   for ((i=0; i != $colors_len; ++i))
+   do
+      echo "color $i: ${colors[$i]} hello world $reset"
+   done
+   : <<COMMENT
+   for ((i=0; i != 10; ++i))
+   do
+      cur_color="[0m[01;3${i}m"
+      echo "testing $i: $cur_color hello, world $reset"
+   done
+COMMENT
+}
+
