@@ -8,11 +8,9 @@ It's a script that scrapes a webpage from WSU for agricultural data, and then ou
 You need python3 installed, and then (from this directory) run:
 
 ```
-mkdir venv
-python3 -m venv venv
-. venv/bin/activate
-pip install -r requirements.txt
-./convert.py > ../data.csv
-deactivate
+./run.sh
 ```
+
+If you're curious, I recommend you read that script.
+It's literally six lines of code, lol.
 
