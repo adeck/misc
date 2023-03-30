@@ -10,24 +10,19 @@
 import calendar
 from datetime import date
 
-# the months are from 1 - 12
-now_month_idx = date.today().month
-now_month_str = calendar.month_name[now_month_idx]
+def print_produce(month_idx: int):
+    """month_idx must be a value in [1, 12]"""
+    month_str = calendar.month_name[month_idx]
 
-# I need it zero-indexed, hence subtracting
-now_month_idx = now_month_idx - 1
+    print(f'For the month of {month_str}, the following produce are in season:')
+    with open('data.csv', 'r') as f:
+        rows = (l.strip().split(';') for l in f.readlines())
+        assert next(rows) == ['Months Harvested', 'Product']
+        for months, product in rows:
+            assert len(months) == 12
+            if months[month_idx - 1] == '1':
+                print(f'{months}: {product}') 
 
-print(f'For the month of {now_month_str}, the following produce are in season:')
-with open('data.csv', 'r') as f:
-    header = False
-    for line in (l.strip() for l in f.readlines()):
-        if not header:
-            assert line == 'Product;Months Harvested'
-            header = True
-            continue
-        fruit, months = line.split(';')
-        assert months[now_month_idx] in {'1', '0'}
-        if months[now_month_idx] == '1':
-            print(f'{months}: {fruit}')
-
+if __name__ == '__main__':
+    print_produce(date.today().month)
 
