@@ -6,16 +6,22 @@
 #   This script reads data in the format of:
 #       https://extension.wsu.edu/whatcom/seasonal-harvest-guide/
 #   And outputs a CSV from the HTML table. CSV is of the format:
-#       Product;Months Harvested
+#       Months Harvested;Product
 #   Where "Months Harvested" is a 12-character string of zeroes and ones.
 #       1 -> it is harvested that month
 #       0 -> it is not harvested that month
+#   "Product" is just the name of the product.
 #
 
-from bs4 import BeautifulSoup
+import calendar
+import logging
 import urllib.request
 
+from bs4 import BeautifulSoup
+
 DATA_URL = 'https://extension.wsu.edu/whatcom/seasonal-harvest-guide/'
+MONTHS = [m.upper() for m in calendar.month_abbr]
+LOG = logging.getLogger('seasonal_fruits')
 
 def main():
     # In reality, I downloaded the HTML and ran this offline.
@@ -24,38 +30,16 @@ def main():
 #    with open('harvest_guide_page.html', 'r') as f:
     with urllib.request.urlopen(DATA_URL) as f:
         soup = BeautifulSoup(f, 'html.parser')
-    print('Product;Months Harvested')
-    header_row = None
-    for tr in soup.tbody:
-        if is_empty(tr):
-            continue
-        if header_row is None:
-            header_row = tr
-        if tr == header_row:
-            continue
-        line = process_tr(tr)
-        print(line)
-
-def is_empty(elem):
-    return elem.string is not None and elem.string.strip() == ''
-
-def process_tr(tr):
-    fruit = None
-    months = ''
-    for td in tr:
-        if is_empty(td):
-            continue
-        td_strs = list(td.stripped_strings)
-        assert len(td_strs) in {1, 0}
-        if fruit is None:
-            assert len(td_strs) == 1
-            fruit = td_strs[0]
-            continue
-        months += str(len(td_strs))
-    assert len(months) == 12
-    #print(fruit)
-    assert ';' not in fruit
-    return f'{fruit};{months}'
+    print('Months Harvested;Product')
+    for tr in soup.select_one('tbody').select('tr'):
+        row = [''.join(td.stripped_strings) for td in tr.select('td')]
+        LOG.debug(row)
+        assert len(row) == 13
+        if row == MONTHS:
+            continue # header row
+        product = row[0]
+        months = ''.join(map(lambda e: {'': '0', '*': '1'}[e], row[1::]))
+        print(f'{months};{product}')
 
 if __name__ == '__main__':
     main()

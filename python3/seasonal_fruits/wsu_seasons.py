@@ -17,8 +17,8 @@ def print_produce(month_idx: int):
     print(f'For the month of {month_str}, the following produce are in season:')
     with open('data.csv', 'r') as f:
         rows = (l.strip().split(';') for l in f.readlines())
-        assert next(rows) == ['Product', 'Months Harvested']
-        for product, months in rows:
+        assert next(rows) == ['Months Harvested', 'Product']
+        for months, product in rows:
             assert len(months) == 12
             if months[month_idx - 1] == '1':
                 print(f'{months}: {product}') 
