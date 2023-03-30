@@ -38,7 +38,7 @@ def main():
         if row == MONTHS:
             continue # header row
         product = row[0]
-        months = ''.join(map(lambda e: {'': '0', '*': '1'}[e], row[1::]))
+        months = ''.join(({'': '0', '*': '1'}[e] for e in row[1::]))
         print(f'{months};{product}')
 
 if __name__ == '__main__':
