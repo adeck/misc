@@ -12,5 +12,5 @@ You need python3 installed, and then (from this directory) run:
 ```
 
 If you're curious, I recommend you read that script.
-It's literally six lines of code, lol.
+It's a very short script.
 
